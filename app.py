@@ -14,14 +14,20 @@ color1='#92A5E8'
 color2='#8E44AD'
 color3='#FFC300'
 sourceurl = 'https://www.kaggle.com/c/titanic'
-githublink = 'https://github.com/plotly-dash-apps/304-titanic-dropdown'
+githublink = 'https://github.com/daniel-varela-3/304-titanic-dropdown'
 
 
 ###### Import a dataframe #######
 df = pd.read_csv("https://raw.githubusercontent.com/austinlasseter/plotly_dash_tutorial/master/00%20resources/titanic.csv")
 df['Female']=df['Sex'].map({'male':0, 'female':1})
+df['Male']=df['Sex'].map({'male':1, 'female':0})
 df['Cabin Class'] = df['Pclass'].map({1:'first', 2: 'second', 3:'third'})
-variables_list=['Survived', 'Female', 'Fare', 'Age']
+df['Survived'] = df['Survived'].map({1:'Yes',2:'No'})
+variables_list=['Survived', 'Fare', 'Age']
+
+#df = pd.read_csv("https://raw.githubusercontent.com/datacamp/community-groupby/master/data/chasewillden-netflix-shows/data/netflix.csv")
+
+#(dropna=False)
 
 ########### Initiate the app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -49,7 +55,7 @@ app.layout = html.Div([
 @app.callback(Output('display-value', 'figure'),
               [Input('dropdown', 'value')])
 def display_value(continuous_var):
-    grouped_mean=df.groupby(['Cabin Class', 'Embarked'])[continuous_var].mean()
+    grouped_mean=df.groupby(['Embarked', 'Survived'])[continuous_var].sum()
     results=pd.DataFrame(grouped_mean)
     # Create a grouped bar chart
     mydata1 = go.Bar(
@@ -58,26 +64,27 @@ def display_value(continuous_var):
         name='First Class',
         marker=dict(color=color1)
     )
-    mydata2 = go.Bar(
-        x=results.loc['second'].index,
-        y=results.loc['second'][continuous_var],
-        name='Second Class',
-        marker=dict(color=color2)
-    )
-    mydata3 = go.Bar(
-        x=results.loc['third'].index,
-        y=results.loc['third'][continuous_var],
-        name='Third Class',
-        marker=dict(color=color3)
-    )
+#    mydata2 = go.Bar(
+#        x=results.loc['second'].index,
+#        y=results.loc['second'][continuous_var],
+#        name='Second Class',
+#        marker=dict(color=color2)
+#    )
+#    mydata3 = go.Bar(
+#        x=results.loc['third'].index,
+#        y=results.loc['third'][continuous_var],
+#        name='Third Class',
+#        marker=dict(color=color3)
+#    )
+#
+#    mylayout = go.Layout(
+#        title='Grouped bar chart',
+#        xaxis = dict(title = 'Port of Embarkation'), # x-axis label
+#        yaxis = dict(title = str(continuous_var)), # y-axis label
 
-    mylayout = go.Layout(
-        title='Grouped bar chart',
-        xaxis = dict(title = 'Port of Embarkation'), # x-axis label
-        yaxis = dict(title = str(continuous_var)), # y-axis label
-
-    )
-    fig = go.Figure(data=[mydata1, mydata2, mydata3], layout=mylayout)
+#   )
+    fig = go.Figure(data=[mydata1 #, mydata2, mydata3
+                         ], layout=mylayout)
     return fig
 
 
